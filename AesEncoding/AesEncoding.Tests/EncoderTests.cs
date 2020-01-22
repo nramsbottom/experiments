@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AesEncoding.Tests
@@ -23,12 +24,12 @@ namespace AesEncoding.Tests
         [TestMethod]
         public void Decode_Returns_Expected()
         {
-            var input = System.Text.Encoding.UTF8.GetBytes("af17e3b519c18d73703afc3ed10d82f1");
             var expectedOutput = "0202";
             var key = PreSharedKey;
 
             var encoder = new Encoder();
-            var actualOutput = encoder.BytesToHex(encoder.Decode(key, input));
+            var input = encoder.StringToBytes("af17e3b519c18d73703afc3ed10d82f1");
+            var actualOutput = System.Text.Encoding.UTF8.GetString(encoder.Decode(key, input));
 
             Assert.AreEqual(expectedOutput, actualOutput);
         }
@@ -61,5 +62,16 @@ namespace AesEncoding.Tests
 
             Assert.AreEqual(messageText, decodedMessageText);
         }
+
+        [TestMethod]
+        public void StringToBytes_Returns_Expected()
+        {
+            var input = "0A0D";
+            var actualOutput = new Encoder().StringToBytes(input);
+            var expectedOutput = new byte[] { 0xA, 0xD };
+
+            CollectionAssert.AreEqual(expectedOutput, actualOutput);
+        }
+
     }
 }
