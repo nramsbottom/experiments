@@ -12,20 +12,25 @@ namespace AesEncoding
         {
             byte[] iv = new byte[16];
 
-            using Aes aes = Aes.Create();
+            using (var aes = Aes.Create())
+            {
+                aes.Key = key;
+                aes.IV = iv;
+                aes.Mode = CipherMode.ECB;
 
-            aes.Key = key;
-            aes.IV = iv;
+                var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-            var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        cryptoStream.Write(data, 0, data.Length);
+                        cryptoStream.Close();
+                    }
 
-            using var memoryStream = new MemoryStream();
-            using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
-
-            cryptoStream.Write(data, 0, data.Length);
-            cryptoStream.Close();
-
-            return memoryStream.ToArray();
+                    return memoryStream.ToArray();
+                }
+            }
         }
 
         public byte[] Decode(byte[] key, byte[] data)

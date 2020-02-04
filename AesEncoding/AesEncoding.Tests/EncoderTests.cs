@@ -1,4 +1,3 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AesEncoding.Tests
@@ -6,14 +5,27 @@ namespace AesEncoding.Tests
     [TestClass]
     public class EncoderTests
     {
-        private static readonly byte[] PreSharedKey = { 0x37, 0x0e, 0x29, 0x1e, 0x31, 0x19, 0x75, 0x21, 0x2f, 0x19, 0x6a, 0x1c, 0x3d, 0x2b, 0x54, 0x47 };
+        private static readonly string Key = "!SuperSecretKey!";
+
+        [TestMethod]
+        public void Encode_With_Salt_Returns_Expected()
+        {
+            var key = System.Text.Encoding.UTF8.GetBytes(Key);
+            var input = System.Text.Encoding.UTF8.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZXXSALTVALUEXX");
+            var expectedOutput = "470000f77f36add3c3df434e34af2e745cdae05ebf43c75b0b94023f8c0b85c6e4521a7fa9f49e32bb0e3c32ab2a021f";
+            var encoder = new Encoder();
+            var actualOutput = encoder.BytesToHex(encoder.Encode(key, input));
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
 
         [TestMethod]
         public void Encode_Returns_Expected()
         {
-            var input = System.Text.Encoding.UTF8.GetBytes("0202");
-            var expectedOutput = "af17e3b519c18d73703afc3ed10d82f1";
-            var key = PreSharedKey;
+            var key = System.Text.Encoding.UTF8.GetBytes(Key);
+            var input = System.Text.Encoding.UTF8.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            var expectedOutput = "470000f77f36add3c3df434e34af2e74f09c40bc3f143b28762c7a045cb93b3c";
 
             var encoder = new Encoder();
             var actualOutput = encoder.BytesToHex(encoder.Encode(key, input));
@@ -24,11 +36,12 @@ namespace AesEncoding.Tests
         [TestMethod]
         public void Decode_Returns_Expected()
         {
-            var expectedOutput = "0202";
-            var key = PreSharedKey;
+            var key = System.Text.Encoding.UTF8.GetBytes(Key);
+            var expectedOutput = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
             var encoder = new Encoder();
-            var input = encoder.StringToBytes("af17e3b519c18d73703afc3ed10d82f1");
+            var input = encoder.StringToBytes("470000f77f36add3c3df434e34af2e74f09c40bc3f143b28762c7a045cb93b3c");
+
             var actualOutput = System.Text.Encoding.UTF8.GetString(encoder.Decode(key, input));
 
             Assert.AreEqual(expectedOutput, actualOutput);
@@ -51,9 +64,8 @@ namespace AesEncoding.Tests
         {
             var messageText = "Hello World";
             var messageBytes = System.Text.Encoding.UTF8.GetBytes(messageText);
-
-            var key = PreSharedKey;
             var encoder = new Encoder();
+            var key = System.Text.Encoding.UTF8.GetBytes(Key);
 
             var encodedMessageBytes = encoder.Encode(key, messageBytes);
 
