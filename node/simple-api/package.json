@@ -1,0 +1,18 @@
+{
+  "name": "api1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node index.js",
+	"createdb": "sqlite3 ./data/test.db < ./data/_test.db.sql"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^5.4.3",
+    "express": "^4.17.1",
+    "http": "0.0.0"
+  }
+}
